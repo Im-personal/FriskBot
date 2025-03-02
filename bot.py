@@ -288,7 +288,7 @@ async def  process_action(msg:types.Message):
                     await bot.send_message(msg.from_user.id,"Новый админ добавлен!")
                     adm_list.append(msg.forward_from.id)
                     return
-            elif await bot.get_chat(int(msg.text)):
+            else:#if await bot.get_chat(int(msg.text)):
                 if int(msg.text) not in adm_list:
                     db.new_admin(int(msg.text))
                     await bot.send_message(msg.from_user.id,"Новый админ добавлен!")
@@ -305,7 +305,7 @@ async def  process_action(msg:types.Message):
                     await bot.send_message(msg.from_user.id,"Админ исключен.")
                     adm_list.remove(msg.forward_from.id)
                     return
-            elif await bot.get_chat(int(msg.text)):
+            else:#if await bot.get_chat(int(msg.text)):
                 if int(msg.text) in adm_list and u_id!=int(msg.text):
                     db.remove_admin(int(msg.text))
                     await bot.send_message(msg.from_user.id,"Админ исключен.")
@@ -336,7 +336,7 @@ async def  process_action(msg:types.Message):
                     list_users.append(msg.forward_from.id)
                     await bot.send_message(msg.from_user.id,f"Пользователей в списке {list_name}: {len(list_users)}")
                     return
-            elif await bot.get_chat(int(msg.text)):
+            else:#if await bot.get_chat(int(msg.text)):
                 print(f"{int(msg.text)} not in {list_users} -> {int(msg.text) not in list_users}")
                 if int(msg.text) not in list_users:
                     list_users.append(int(msg.text))
