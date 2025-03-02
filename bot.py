@@ -1,9 +1,12 @@
+import asyncio
+
 import db
-from aiogram import Bot, Dispatcher, executor, types
+from aiogram import Bot, Dispatcher, types
+from aiogram.filters import Command
 
 # Initialize bot and dispatcher
 bot = Bot(token="7670339176:AAG3IfW1RWCkd4SoMA8PgubEOClsL2nU5vg")
-dp = Dispatcher(bot)
+dp = Dispatcher()
 
 adm_list = []
 
@@ -27,7 +30,7 @@ def load_data():
         adm_list.append(n[0])
 
 
-@dp.message_handler(commands=["start"])
+@dp.message(Command("start"))
 async def start(message: types.Message):
     if message.chat.type == "private":
         if message.from_user.id in adm_list:
@@ -35,7 +38,7 @@ async def start(message: types.Message):
         else:
             await bot.send_message(message.from_user.id, "Привет! Напиши сюда и сообщение будет переслано админам. (Если адресат скрыт - админы не смогут ответить)")
 
-@dp.message_handler(commands=["help"])
+@dp.message(Command("help"))
 async def start(message: types.Message):
     if message.chat.type == "private":
         if message.from_user.id in adm_list:
@@ -55,12 +58,12 @@ async def start(message: types.Message):
 /users <Количество> - Отобразить пользователей, написавших менее <Количество> сообщений в чате со включенным подсчетом
 ''')
 
-@dp.message_handler(commands=["id"])
+@dp.message(Command("id"))
 async def start(message: types.Message):
     if message.from_user.id in adm_list:
             await bot.send_message(message.chat.id, f"ID пользователя: {message.reply_to_message.from_user.id}")
 
-@dp.message_handler(commands=["addadmin"])
+@dp.message(Command("addadmin"))
 async def start(message: types.Message):
     if message.chat.type == "private":
         if message.from_user.id in adm_list:
@@ -70,14 +73,14 @@ async def start(message: types.Message):
             ''')
             db.set_adm_state(message.from_user.id,M_ADMIN)
 
-@dp.message_handler(commands=["state"])
+@dp.message(Command("state"))
 async def state(message: types.Message):
     if message.chat.type == "private":
         if message.from_user.id in adm_list:
             await bot.send_message(message.from_user.id, f"{db.get_adm_state(message.from_user.id)}")
 
 
-@dp.message_handler(commands=["removeAdmin"])
+@dp.message(Command("removeadmin"))
 async def remove_admin(message: types.Message):
     if message.chat.type == "private":
         if message.from_user.id in adm_list:
@@ -87,7 +90,7 @@ async def remove_admin(message: types.Message):
             ''')
             db.set_adm_state(message.from_user.id,M_REMOVE_ADMIN)
 
-@dp.message_handler(commands=["cancel"])
+@dp.message(Command("cancel"))
 async def remove_admin(message: types.Message):
     if message.chat.type == "private":
         if message.from_user.id in adm_list:
@@ -96,7 +99,7 @@ async def remove_admin(message: types.Message):
             ''')
             db.set_adm_state(message.from_user.id,M_NONE)
 
-@dp.message_handler(commands=["setupChats"])
+@dp.message(Command("setupchats"))
 async def setup_chats(message: types.Message):
     if message.chat.type == "private":
         if message.from_user.id in adm_list:
@@ -109,7 +112,7 @@ async def setup_chats(message: types.Message):
 
             await bot.send_message(message.from_user.id,f"Для включения подсчета сообщений в чате напишите /count <id>\n\nДля создания сообщения, что будет писаться под каждым постом напишите /message <id>\n\nУбрать чат из списка (бот выйдет из чата) /remove <id>")
 
-@dp.message_handler(commands=["count"])
+@dp.message(Command("count"))
 async def count(message: types.Message):
     if message.chat.type == "private":
         if message.from_user.id in adm_list:
@@ -124,14 +127,14 @@ async def count(message: types.Message):
             else:
                     await bot.send_message(message.from_user.id,"Нет такого чата..")
 
-@dp.message_handler(commands=["newList"])
+@dp.message(Command("newlist"))
 async def new_list(message: types.Message):
     if message.chat.type == "private":
         if message.from_user.id in adm_list:
             db.set_adm_state(message.from_user.id,M_LIST_NAME)
             await bot.send_message(message.from_user.id, "Введите название нового списка\n\nДля отмены /cancel")
 
-@dp.message_handler(commands=["message"])
+@dp.message(Command("message"))
 async def message(message: types.Message):
     if message.chat.type == "private":
         if message.from_user.id in adm_list:
@@ -147,7 +150,7 @@ async def message(message: types.Message):
 
 chat_to_work = 0
 
-@dp.message_handler(commands=["remove"])
+@dp.message(Command("remove"))
 async def remove(message: types.Message):
     if message.chat.type == "private":
         if message.from_user.id in adm_list:
@@ -165,7 +168,7 @@ async def remove(message: types.Message):
                 db.remove_list(name)
                 await bot.send_message(message.from_user.id,"Список удален!")
 
-@dp.message_handler(commands=["call"])
+@dp.message(Command("call"))
 async def lists(msg: types.Message):
     if msg.chat.type != "private":
         if msg.from_user.id in adm_list:
@@ -178,14 +181,14 @@ async def lists(msg: types.Message):
             else:
                 await bot.send_message(msg.chat.id, f"Призыв чата! (в разработке........)")
 
-@dp.message_handler(commands=["clear"])
+@dp.message(Command("clear"))
 async def clear(msg: types.Message):
     if msg.chat.type == "private":
         if msg.from_user.id in adm_list:
             db.clear_messages()
             await bot.send_message(msg.chat.id, "Данные обнулены!")
 
-@dp.message_handler(commands=["users"])
+@dp.message(Command("users"))
 async def lists(msg: types.Message):
     if msg.chat.type == "private":
         if msg.from_user.id in adm_list:
@@ -202,7 +205,7 @@ def protect(text):
 
 
 
-@dp.message_handler(commands=["lists"])
+@dp.message(Command("lists"))
 async def lists(msg: types.Message):
     if msg.chat.type == "private":
         if msg.from_user.id in adm_list:
@@ -216,7 +219,7 @@ async def lists(msg: types.Message):
 
             res+="\n/remove <название> - чтобы удалить список"
             await bot.send_message(msg.from_user.id, res)
-@dp.message_handler(commands=["done"])
+@dp.message(Command("done"))
 async def done(msg: types.Message):
     if msg.chat.type == "private":
         if msg.from_user.id in adm_list:
@@ -233,12 +236,12 @@ async def done(msg: types.Message):
                 else:
                     await bot.send_message(u_id, f"Список не создан, слишком мало участников!")
 
-@dp.message_handler(commands=["debug"])
+@dp.message(Command("debug"))
 async def debug(message: types.Message):
     db.debug()
 
 
-@dp.message_handler()
+@dp.message()
 async def any(message: types.Message):
     if message.chat.type == "private":
         if message.from_user.id in adm_list:
@@ -343,9 +346,10 @@ async def  process_action(msg:types.Message):
             print(e)
         await bot.send_message(msg.from_user.id,"Не получилось чего-то")
 
-
+async def main():
+    await dp.start_polling(bot)
 
 if __name__ == "__main__":
     print("BOT STARTED")
     load_data()
-    executor.start_polling(dp)
+    asyncio.run(main())
