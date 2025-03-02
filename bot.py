@@ -246,7 +246,7 @@ async def any(message: types.Message):
     if message.chat.type == "private":
         if message.from_user.id in adm_list:
             if(message.reply_to_message):
-                if message.reply_to_message.is_forward():
+                if message.reply_to_message.forward_from:
                     await message.forward(message.reply_to_message.forward_from.id)
                     await bot.send_message(message.from_user.id, "Сообщение отправлено!")
                     return
@@ -282,7 +282,7 @@ async def  process_action(msg:types.Message):
     global list_users
     if mode == M_ADMIN:
         try:
-            if msg.is_forward() and msg.forward_from:
+            if msg.forward_from:
                 if msg.forward_from.id not in adm_list:
                     db.new_admin(msg.forward_from.id)
                     await bot.send_message(msg.from_user.id,"Новый админ добавлен!")
@@ -299,7 +299,7 @@ async def  process_action(msg:types.Message):
         await bot.send_message(msg.from_user.id,"Не получилось чего-то")
     elif mode == M_REMOVE_ADMIN:
         try:
-            if msg.is_forward() and msg.forward_from:
+            if msg.forward_from:
                 if msg.forward_from.id in adm_list and u_id !=msg.forward_from.id:
                     db.remove_admin(msg.forward_from.id)
                     await bot.send_message(msg.from_user.id,"Админ исключен.")
@@ -330,7 +330,7 @@ async def  process_action(msg:types.Message):
         db.set_adm_state(u_id,M_LIST_USERS)
     elif mode == M_LIST_USERS:
         try:
-            if msg.is_forward() and msg.forward_from:
+            if msg.forward_from:
                 print(f"{msg.forward_from.id} not in {list_users} -> {msg.forward_from.id not in list_users}")
                 if msg.forward_from.id not in list_users:
                     list_users.append(msg.forward_from.id)
