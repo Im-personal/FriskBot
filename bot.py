@@ -178,7 +178,7 @@ async def lists(msg: types.Message):
                 await bot.send_message(msg.chat.id, f"Призыв списка {name}!")
                 for l in list:
                     await bot.send_message(msg.chat.id, f"[прив](tg://user?id={l})", parse_mode="MarkdownV2")
-                    await asyncio.sleep(100)
+                    await asyncio.sleep(0.1)
             else:
                 await bot.send_message(msg.chat.id, f"Призыв чата! (в разработке........)")
 
