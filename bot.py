@@ -179,13 +179,14 @@ async def lists(msg: types.Message):
                 s = ""
                 count = 0
                 for l in list:
-                    s+=f"[прив](tg://user?id={l})\n"
+                    s+=f"[прив](tg://user?id={l}) "
                     count+=1
-                    if(count==4):
+                    if(count==5):
                         await bot.send_message(msg.chat.id, s, parse_mode="MarkdownV2")
                         await asyncio.sleep(1)
                         s = ""
                         count = 0
+                await bot.send_message(msg.chat.id, s, parse_mode="MarkdownV2")
             else:
                 await bot.send_message(msg.chat.id, f"Призыв чата! (в разработке........)")
 
