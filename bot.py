@@ -176,9 +176,16 @@ async def lists(msg: types.Message):
             if(len(name)>0):
                 list = db.get_list(name)
                 await bot.send_message(msg.chat.id, f"Призыв списка {name}!")
+                s = ""
+                count = 0
                 for l in list:
-                    await bot.send_message(msg.chat.id, f"[прив](tg://user?id={l})", parse_mode="MarkdownV2")
-                    await asyncio.sleep(0.1)
+                    s+=f"[прив](tg://user?id={l})\n"
+                    count+=1
+                    if(count==4):
+                        await bot.send_message(msg.chat.id, s, parse_mode="MarkdownV2")
+                        await asyncio.sleep(1)
+                        s = ""
+                        count = 0
             else:
                 await bot.send_message(msg.chat.id, f"Призыв чата! (в разработке........)")
 
