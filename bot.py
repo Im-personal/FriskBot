@@ -178,6 +178,7 @@ async def lists(msg: types.Message):
                 await bot.send_message(msg.chat.id, f"Призыв списка {name}!")
                 for l in list:
                     await bot.send_message(msg.chat.id, f"[прив](tg://user?id={l})", parse_mode="MarkdownV2")
+                    await asyncio.sleep(100)
             else:
                 await bot.send_message(msg.chat.id, f"Призыв чата! (в разработке........)")
 
@@ -215,7 +216,7 @@ async def lists(msg: types.Message):
                 res+=f"{l[0]} - {len(l[1].split())} участников\n"
 
             if(len(lists)==0):
-                res+="[Списков еще нет - /newList для создания нового списка]\n"
+                res+="[Списков еще нет - /newlist для создания нового списка]\n"
 
             res+="\n/remove <название> - чтобы удалить список"
             await bot.send_message(msg.from_user.id, res)
