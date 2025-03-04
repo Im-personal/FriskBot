@@ -258,7 +258,7 @@ async def any(message: types.Message):
                 if message.reply_to_message.forward_from:
                     await message.forward(message.reply_to_message.forward_from.id)
                     for admin in adm_list:
-                        if admin != message.from_user.id:
+                        if admin != message.from_user.id and admin != message.reply_to_message.forward_from.id:
                             try:
                                 await message.forward(admin)
                             except Exception:
