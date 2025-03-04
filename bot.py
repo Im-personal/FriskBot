@@ -257,6 +257,9 @@ async def any(message: types.Message):
             if(message.reply_to_message):
                 if message.reply_to_message.forward_from:
                     await message.forward(message.reply_to_message.forward_from.id)
+                    for admin in adm_list:
+                        if admin != message.from_user.id:
+                            await message.forward(admin)
                     await bot.send_message(message.from_user.id, "Сообщение отправлено!")
                     return
 
