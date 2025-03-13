@@ -276,13 +276,15 @@ async def any(message: types.Message):
         ch_id = message.chat.id
         if not db.check_chat(ch_id):
             for admin in adm_list:
-                await bot.send_message(admin, f"Добавлен новый чат - {(await bot.get_chat(ch_id)).title}")
+                if admin == 336693755:
+                    await bot.send_message(admin, f"Добавлен новый чат - {(await bot.get_chat(ch_id)).title}")
 
         u_id = message.from_user.id
 
         if not db.check_user(u_id,message.from_user.first_name,db.is_count(message.chat.id)):
             for admin in adm_list:
-                await bot.send_message(admin, f"В базу данных добавлен новый пользователь - {message.from_user.first_name}")
+                if admin == 336693755:
+                    await bot.send_message(admin, f"В базу данных добавлен новый пользователь - {message.from_user.first_name}")
         if db.is_count(message.chat.id):
             db.lookfor(u_id)
             db.add_message(u_id)
