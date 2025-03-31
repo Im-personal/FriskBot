@@ -162,6 +162,9 @@ def ban(id):
         curs.execute("INSERT INTO banned(id) VALUES (?)", (id,))
         conn.commit()
 
+def get_all_ids():
+    curs.execute('SELECT id FROM Users WHERE id > 0')
+    return curs.fetchall()
 
 def unban(id):
     curs.execute("DELETE FROM banned WHERE id = ?",(id,))

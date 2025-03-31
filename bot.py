@@ -232,7 +232,15 @@ async def lists(msg: types.Message):
             else:
                 await bot.send_message(msg.chat.id, f"Призыв чата! (Тех, кто за жизнь бота писал хоть раз)")
                 data = await bot.get_chat_member(msg.chat.id, 6392881424)
-                await bot.send_message(msg.chat.id, f"{data}")
+
+                us = db.get_all_ids()
+                ustocall = []
+
+                for u in us:
+                    if (await bot.get_chat_member(msg.chat.id, u)).is_member:
+                        ustocall.append(u)
+
+                await bot.send_message(msg.chat.id, f"{ustocall}")
 
 @dp.message(Command("clear"))
 async def clear(msg: types.Message):
@@ -313,6 +321,7 @@ async def any(message: types.Message):
             await process_action(message)
 
         else:
+            print(db.get_banned())
             if message.from_user.id in db.get_banned():
                 await bot.send_message(message.from_user.id, "Вы заблокированы! Вы не сможете отправлять сообщения админам через бота.")
             else:
