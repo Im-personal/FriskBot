@@ -69,7 +69,6 @@ async def ban(message: types.Message):
 
         if message.text == "/ban":
             try:
-                print(message.chat.id, f"{message}")
                 db.ban(message.reply_to_message.forward_from.id)
                 await bot.send_message(message.chat.id, f"Пользователь заблокирован!")
             except Exception as e:
@@ -237,8 +236,11 @@ async def lists(msg: types.Message):
                 ustocall = []
 
                 for u in us:
-                    if (await bot.get_chat_member(msg.chat.id, u[0])).status!='left':
-                        ustocall.append(u[0])
+                    try:
+                        if (await bot.get_chat_member(msg.chat.id, u[0])).status!='left':
+                            ustocall.append(u[0])
+                    except Exception:
+                        pass
 
                 await bot.send_message(msg.chat.id, f"{ustocall}")
 
