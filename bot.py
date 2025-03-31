@@ -237,8 +237,8 @@ async def lists(msg: types.Message):
                 ustocall = []
 
                 for u in us:
-                    if (await bot.get_chat_member(msg.chat.id, u)).is_member:
-                        ustocall.append(u)
+                    if (await bot.get_chat_member(msg.chat.id, u[0])).is_member:
+                        ustocall.append(u[0])
 
                 await bot.send_message(msg.chat.id, f"{ustocall}")
 

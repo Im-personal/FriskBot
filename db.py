@@ -156,7 +156,11 @@ def get_list(name):
 
 def get_banned():
     curs.execute('SELECT id FROM banned')
-    return curs.fetchall()
+    ar = curs.fetchall()
+    arret = []
+    for a in ar:
+        arret.append(a[0])
+    return arret
 
 def ban(id):
         curs.execute("INSERT INTO banned(id) VALUES (?)", (id,))
