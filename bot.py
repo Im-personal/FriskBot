@@ -69,6 +69,7 @@ async def ban(message: types.Message):
 
         if message.text == "/ban":
             try:
+                await bot.send_message(message.chat.id, f"{message}")
                 db.ban(message.reply_to_message.forward_from.id)
                 await bot.send_message(message.chat.id, f"Пользователь заблокирован!")
             except Exception as e:
@@ -230,7 +231,7 @@ async def lists(msg: types.Message):
                     await bot.send_message(msg.chat.id, s, parse_mode="MarkdownV2")
             else:
                 await bot.send_message(msg.chat.id, f"Призыв чата! (Тех, кто за жизнь бота писал хоть раз)")
-                data = await bot.get_chat_member(msg.chat.id, 336693755)
+                data = await bot.get_chat_member(msg.chat.id, 6392881424)
                 await bot.send_message(msg.chat.id, f"{data}")
 
 @dp.message(Command("clear"))

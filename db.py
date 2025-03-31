@@ -159,7 +159,7 @@ def get_banned():
     return curs.fetchall()
 
 def ban(id):
-        curs.execute("INSERT INTO banned(id) VALUES (?)", (id))
+        curs.execute("INSERT INTO banned(id) VALUES (?)", (id,))
         conn.commit()
 
 
