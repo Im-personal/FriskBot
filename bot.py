@@ -71,15 +71,17 @@ async def ban(message: types.Message):
             try:
                 db.ban(message.reply_to_message.forward_from.id)
                 await bot.send_message(message.chat.id, f"Пользователь заблокирован!")
-            except Exception:
+            except Exception as e:
                 await bot.send_message(message.chat.id, f"Что то пошло не так, может, у пользователя скрыт аккаунт.")
+                print(e)
         else:
             try:
                 mid = message.text.replace('/ban ','')
                 db.ban(mid)
                 await bot.send_message(message.chat.id, f"Пользователь заблокирован!")
-            except Exception:
+            except Exception as e:
                 await bot.send_message(message.chat.id, f"Что то пошло не так, попросите Куки разобраться")
+                print(e)
 
 
 @dp.message(Command("unban"))
@@ -210,21 +212,22 @@ async def remove(message: types.Message):
 async def lists(msg: types.Message):
     if msg.chat.type != "private":
         if msg.from_user.id in adm_list:
-            name = msg.text.replace('/call ','')
-            if(len(name)>0):
-                list = db.get_list(name)
-                await bot.send_message(msg.chat.id, f"Призыв списка {name}!")
-                s = ""
-                count = 0
-                for l in list:
-                    s+=f"[прив](tg://user?id={l}) "
-                    count+=1
-                    if(count==5):
-                        await bot.send_message(msg.chat.id, s, parse_mode="MarkdownV2")
-                        await asyncio.sleep(1)
-                        s = ""
-                        count = 0
-                await bot.send_message(msg.chat.id, s, parse_mode="MarkdownV2")
+            if msg.text != '/call':
+                name = msg.text.replace('/call ','')
+                if(len(name)>0):
+                    list = db.get_list(name)
+                    await bot.send_message(msg.chat.id, f"Призыв списка {name}!")
+                    s = ""
+                    count = 0
+                    for l in list:
+                        s+=f"[прив](tg://user?id={l}) "
+                        count+=1
+                        if(count==5):
+                            await bot.send_message(msg.chat.id, s, parse_mode="MarkdownV2")
+                            await asyncio.sleep(1)
+                            s = ""
+                            count = 0
+                    await bot.send_message(msg.chat.id, s, parse_mode="MarkdownV2")
             else:
                 await bot.send_message(msg.chat.id, f"Призыв чата! (Тех, кто за жизнь бота писал хоть раз)")
                 data = await bot.get_chat_member(msg.chat.id, 336693755)
@@ -313,7 +316,7 @@ async def any(message: types.Message):
                 await bot.send_message(message.from_user.id, "Вы заблокированы! Вы не сможете отправлять сообщения админам через бота.")
             else:
                 for admin in adm_list:
-                    await bot.send_message(admin,f"ID пользователя: ```{message.from_user.id}```")
+                    await bot.send_message(admin,f"ID пользователя: {message.from_user.id}")
                     await message.forward(admin)
                 await bot.send_message(message.from_user.id, "Сообщение отправлено!")
     else:
