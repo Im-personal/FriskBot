@@ -70,7 +70,10 @@ async def ban(message: types.Message):
         if message.text == "/ban":
             try:
                 db.ban(message.reply_to_message.forward_from.id)
-                await bot.send_message(message.chat.id, f"Пользователь заблокирован!")
+                #await bot.send_message(message.chat.id, f"Пользователь заблокирован!")
+                await bot.send_message(message.reply_to_message.forward_from.id, f"Вы заблокированы!")
+                for a in adm_list:
+                    await bot.send_message(a, f"Пользоваель {message.reply_to_message.forward_from.id} заблокирован!")
             except Exception as e:
                 await bot.send_message(message.chat.id, f"Что то пошло не так, может, у пользователя скрыт аккаунт.")
                 print(e)
@@ -78,7 +81,10 @@ async def ban(message: types.Message):
             try:
                 mid = message.text.replace('/ban ','')
                 db.ban(mid)
-                await bot.send_message(message.chat.id, f"Пользователь заблокирован!")
+                #await bot.send_message(message.chat.id, f"Пользователь заблокирован!")
+                await bot.send_message(mid, f"Вы заблокированы!")
+                for a in adm_list:
+                    await bot.send_message(a, f"Пользоваель {mid} заблокирован!")
             except Exception as e:
                 await bot.send_message(message.chat.id, f"Что то пошло не так, попросите Куки разобраться")
                 print(e)
@@ -91,14 +97,17 @@ async def ban(message: types.Message):
         if message.text == "/unban":
             try:
                 db.unban(message.reply_to_message.forward_from.id)
-                await bot.send_message(message.chat.id, f"Пользователь разблокирован!")
+                #await bot.send_message(message.chat.id, f"Пользователь разблокирован!")
+                for a in adm_list:
+                    await bot.send_message(a, f"Пользоваель {message.reply_to_message.forward_from.id} разблокирован!")
             except Exception:
                 await bot.send_message(message.chat.id, f"Что то пошло не так, может, у пользователя скрыт аккаунт.")
         else:
             try:
                 mid = message.text.replace('/unban ', '')
                 db.unban(mid)
-                await bot.send_message(message.chat.id, f"Пользователь разблокирован!")
+                for a in adm_list:
+                    await bot.send_message(a, f"Пользоваель {mid} заблокирован!")
             except Exception:
                 await bot.send_message(message.chat.id, f"Что то пошло не так, попросите Куки разобраться")
 
