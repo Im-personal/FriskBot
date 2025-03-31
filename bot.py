@@ -229,7 +229,7 @@ async def lists(msg: types.Message):
                             count = 0
                     await bot.send_message(msg.chat.id, s, parse_mode="MarkdownV2")
             else:
-                await bot.send_message(msg.chat.id, f"Призыв чата! (Тех, кто за жизнь бота писал хоть раз)")
+                await bot.send_message(msg.chat.id, f"Щас будет призыв чата! (Тех, кто за жизнь бота писал хоть раз)")
                 data = await bot.get_chat_member(msg.chat.id, 6392881424)
 
                 us = db.get_all_ids()
@@ -242,7 +242,19 @@ async def lists(msg: types.Message):
                     except Exception:
                         pass
 
-                await bot.send_message(msg.chat.id, f"{ustocall}")
+                s = ""
+                count = 0
+                for l in ustocall:
+                    s += f"[прив](tg://user?id={l}) "
+                    count += 1
+                    if (count == 5):
+                        await bot.send_message(msg.chat.id, s, parse_mode="MarkdownV2")
+                        await asyncio.sleep(1)
+                        s = ""
+                        count = 0
+                await bot.send_message(msg.chat.id, s, parse_mode="MarkdownV2")
+
+                #await bot.send_message(msg.chat.id, f"{ustocall}"
 
 @dp.message(Command("clear"))
 async def clear(msg: types.Message):
