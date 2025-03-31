@@ -9,6 +9,12 @@ def init_db():
     global conn
     global curs
 
+    curs.execute('''
+    CREATE TABLE IF NOT EXISTS banned(
+    id INTEGER
+    )
+    ''')
+
     curs.execute('''CREATE TABLE IF NOT EXISTS Users(
     id INTEGER,
     name TEXT,
@@ -37,7 +43,6 @@ def init_db():
 def get_admins():
     curs.execute('SELECT id FROM Admins')
     return curs.fetchall()
-
 
 #Пользователи
 
@@ -148,3 +153,16 @@ def get_adm_state(id):
 def get_list(name):
     curs.execute('SELECT users FROM Lists WHERE name=?', (name,))
     return curs.fetchall()[0][0].split()
+
+def get_banned():
+    curs.execute('SELECT id FROM banned')
+    return curs.fetchall()
+
+def ban(id):
+        curs.execute("INSERT INTO banned(id) VALUES (?)", (id))
+        conn.commit()
+
+
+def unban(id):
+    curs.execute("DELETE FROM banned WHERE id = ?",(id,))
+    conn.commit()

@@ -63,6 +63,44 @@ async def start(message: types.Message):
     if message.from_user.id in adm_list:
             await bot.send_message(message.chat.id, f"ID пользователя: {message.reply_to_message.from_user.id}")
 
+@dp.message(Command("ban"))
+async def ban(message: types.Message):
+    if message.from_user.id in adm_list:
+
+        if message.text == "/ban":
+            try:
+                db.ban(message.reply_to_message.forward_from.id)
+                await bot.send_message(message.chat.id, f"Пользователь заблокирован!")
+            except Exception:
+                await bot.send_message(message.chat.id, f"Что то пошло не так, может, у пользователя скрыт аккаунт.")
+        else:
+            try:
+                mid = message.text.replace('/ban ','')
+                db.ban(mid)
+                await bot.send_message(message.chat.id, f"Пользователь заблокирован!")
+            except Exception:
+                await bot.send_message(message.chat.id, f"Что то пошло не так, попросите Куки разобраться")
+
+
+@dp.message(Command("unban"))
+async def ban(message: types.Message):
+    if message.from_user.id in adm_list:
+
+        if message.text == "/unban":
+            try:
+                db.unban(message.reply_to_message.forward_from.id)
+                await bot.send_message(message.chat.id, f"Пользователь разблокирован!")
+            except Exception:
+                await bot.send_message(message.chat.id, f"Что то пошло не так, может, у пользователя скрыт аккаунт.")
+        else:
+            try:
+                mid = message.text.replace('/unban ', '')
+                db.unban(mid)
+                await bot.send_message(message.chat.id, f"Пользователь разблокирован!")
+            except Exception:
+                await bot.send_message(message.chat.id, f"Что то пошло не так, попросите Куки разобраться")
+
+
 @dp.message(Command("addadmin"))
 async def start(message: types.Message):
     if message.chat.type == "private":
@@ -188,7 +226,9 @@ async def lists(msg: types.Message):
                         count = 0
                 await bot.send_message(msg.chat.id, s, parse_mode="MarkdownV2")
             else:
-                await bot.send_message(msg.chat.id, f"Призыв чата! (в разработке........)")
+                await bot.send_message(msg.chat.id, f"Призыв чата! (Тех, кто за жизнь бота писал хоть раз)")
+                data = await bot.get_chat_member(msg.chat.id, 336693755)
+                await bot.send_message(msg.chat.id, f"{data}")
 
 @dp.message(Command("clear"))
 async def clear(msg: types.Message):
@@ -269,9 +309,13 @@ async def any(message: types.Message):
             await process_action(message)
 
         else:
-            for admin in adm_list:
-                await message.forward(admin)
-            await bot.send_message(message.from_user.id, "Сообщение отправлено!")
+            if message.from_user.id in db.get_banned():
+                await bot.send_message(message.from_user.id, "Вы заблокированы! Вы не сможете отправлять сообщения админам через бота.")
+            else:
+                for admin in adm_list:
+                    await bot.send_message(admin,f"ID пользователя: ```{message.from_user.id}```")
+                    await message.forward(admin)
+                await bot.send_message(message.from_user.id, "Сообщение отправлено!")
     else:
         ch_id = message.chat.id
         if not db.check_chat(ch_id):
