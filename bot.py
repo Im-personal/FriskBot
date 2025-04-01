@@ -221,7 +221,7 @@ async def remove(message: types.Message):
 async def lists(msg: types.Message):
     if msg.chat.type != "private":
         if msg.from_user.id in adm_list:
-            if msg.text != '/call':
+            if msg.text != '/call' and msg.text != '/call@UndertaleCoreBot' :
                 name = msg.text.replace('/call ','')
                 if(len(name)>0):
                     list = db.get_list(name)
