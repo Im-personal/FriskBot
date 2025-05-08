@@ -369,6 +369,10 @@ async def any(message: types.Message):
             db.lookfor(u_id)
             db.add_message(u_id)
 
+        if is_proh(message):
+            await message.delete()
+
+
 
 list_name = ""
 list_users = []
@@ -445,6 +449,35 @@ async def  process_action(msg:types.Message):
 
 async def main():
     await dp.start_polling(bot)
+
+banwords = [
+    "эщкере",
+    "скуф",
+    "альтушка",
+    "сигма",
+    "бета",
+    "скибиди",
+    "найк про",
+    "изгой",
+    "нижмид",
+    "сосали",
+    "сосал",
+    "абаюдна",
+    "обоюдно",
+    "щавель",
+    "веном",
+    "venom",
+    "даюработу",
+    "заподарками",
+    "влс"
+]
+
+def is_proh(msg):
+    ntext = msg.text.replace(" ","").replace("\n",'').lower()
+    for word in banwords:
+        if word in ntext:
+            return True
+    return False
 
 if __name__ == "__main__":
     print("BOT STARTED")
