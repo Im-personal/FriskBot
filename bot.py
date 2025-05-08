@@ -1,5 +1,7 @@
 import asyncio
 
+from datetime import timedelta, datetime
+
 import db
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
@@ -369,7 +371,7 @@ async def any(message: types.Message):
             db.lookfor(u_id)
             db.add_message(u_id)
 
-        if is_proh(message):
+        if await is_proh(message):
             await message.delete()
 
 
@@ -451,6 +453,11 @@ async def main():
     await dp.start_polling(bot)
 
 banwords = [
+    "даюработу",
+    "заподарками",
+]
+
+mutewords = [
     "эщкере",
     "скуф",
     "альтушка",
@@ -467,15 +474,22 @@ banwords = [
     "щавель",
     "веном",
     "venom",
-    "даюработу",
-    "заподарками",
-    "влс"
 ]
 
-def is_proh(msg):
+async def is_proh(msg:types.Message):
     ntext = msg.text.replace(" ","").replace("\n",'').lower()
     for word in banwords:
         if word in ntext:
+            await bot.ban_chat_member(msg.chat.id,msg.from_user.id)
+            return True
+
+    for word in mutewords:
+        if word in ntext:
+            dt = datetime.now() + timedelta(hours=1)
+            timestamp = dt.timestamp()
+            await bot.restrict_chat_member(msg.chat.id, msg.from_user.id,
+                                           types.ChatPermissions(), until_date=timestamp)
+
             return True
     return False
 
