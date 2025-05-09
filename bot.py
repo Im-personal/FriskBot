@@ -7,7 +7,11 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 
 # Initialize bot and dispatcher
-bot = Bot(token="7670339176:AAG3IfW1RWCkd4SoMA8PgubEOClsL2nU5vg")
+secret = ""
+with open('secret.txt', 'r') as file:
+    secret = file.read().replace('\n', '')
+
+bot = Bot(token=secret)
 dp = Dispatcher()
 
 adm_list = []
