@@ -501,3 +501,5 @@ if __name__ == "__main__":
     print("BOT STARTED")
     load_data()
     asyncio.run(main())
+
+#sec
