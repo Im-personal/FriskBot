@@ -482,8 +482,17 @@ mutewords = [
     "venom",
 ]
 
+rep = [
+    ['0','o'],
+    ['3','e'],
+]
+
 async def is_proh(msg:types.Message):
     ntext = msg.text.replace(" ","").replace("\n",'').lower()
+
+    for com in rep:
+        ntext = ntext.replace(com[0],com[1])
+
     for word in banwords:
         if word in ntext:
             await bot.ban_chat_member(msg.chat.id,msg.from_user.id)
