@@ -483,8 +483,16 @@ mutewords = [
 ]
 
 rep = [
-    ['0','o'],
+    ['0','о'],
     ['3','e'],
+    ['t','т'],
+    ['e','е'],
+    ['p','р'],
+    ['a','а'],
+    ['c','с'],
+    ['k','к'],
+    ['b','в'],
+    ['x','х'],
 ]
 
 async def is_proh(msg:types.Message):
@@ -492,6 +500,8 @@ async def is_proh(msg:types.Message):
 
     for com in rep:
         ntext = ntext.replace(com[0],com[1])
+
+    print(ntext)
 
     for word in banwords:
         if word in ntext:
