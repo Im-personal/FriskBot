@@ -462,7 +462,8 @@ banwords = [
     "подработка",
     "заподарками",
     "помогусденьгами",
-    "1оооорзапаручасов",
+    "ооорзапаручасов",
+    "оооркаждомузапаручасов",
 ]
 
 mutewords = [
@@ -504,11 +505,12 @@ async def is_proh(msg:types.Message):
     for com in rep:
         ntext = ntext.replace(com[0],com[1])
 
-    print(ntext)
+    #print(ntext)
 
     for word in banwords:
         if word in ntext:
             await bot.ban_chat_member(msg.chat.id,msg.from_user.id)
+            print("banned!")
             return True
 
     for word in mutewords:
