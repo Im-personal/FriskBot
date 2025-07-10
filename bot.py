@@ -380,12 +380,12 @@ async def any(message: types.Message):
         if await is_proh(message):
             await message.delete()
 
-        for ent in message.entities:
-            if ent.type == MessageEntityType.URL:
-                dt = datetime.now() + timedelta(hours=1)
-                timestamp = dt.timestamp()
-                await bot.restrict_chat_member(message.chat.id, message.from_user.id,
-                                               types.ChatPermissions(), until_date=timestamp)
+
+        if "t.me" in message.text:
+            dt = datetime.now() + timedelta(hours=1)
+            timestamp = dt.timestamp()
+            await bot.restrict_chat_member(message.chat.id, message.from_user.id,
+                                           types.ChatPermissions(), until_date=timestamp)
 
 
 
