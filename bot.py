@@ -577,6 +577,7 @@ async def is_proh(msg:types.Message):
 
     for word in adwords:
         if word in ntext:
+            print(f"adword {word} is triggered. Checking...")
             if deepseek.isAd(ntext):
                 for adm in adm_list:
                     await bot.send_message(adm, "Обнаружена реклама! Пользователь заблокирован:")
@@ -585,6 +586,7 @@ async def is_proh(msg:types.Message):
                 db.remove_user(msg.from_user.id)
                 print("banned!")
                 return True
+            print(f"nah, not ad")
 
     #for word in banwords:
     #    if word in ntext:
