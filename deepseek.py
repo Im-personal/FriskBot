@@ -3,7 +3,7 @@ import json
 
 API_KEY = ""  # внутри скобок свой апи ключ отсюда https://openrouter.ai/settings/keys
 with open('deepsecret.txt', 'r') as file:
-    secret = file.read().replace('\n', '')
+    API_KEY = file.read().replace('\n', '')
 
 MODEL = "deepseek/deepseek-r1"
 
