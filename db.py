@@ -93,6 +93,9 @@ def remove_list(name):
     curs.execute("DELETE FROM Lists WHERE name = ?",(name,))
     conn.commit()
 
+def remove_user(id):
+    curs.execute("DELETE FROM Users WHERE id = ?", (id,))
+
 def is_chat_exists(id):
     curs.execute('SELECT * FROM Chats WHERE id = ?', (id,))
     if (len(curs.fetchall()) <= 0):
@@ -168,6 +171,10 @@ def ban(id):
 
 def get_all_ids():
     curs.execute('SELECT id FROM Users WHERE id > 0')
+    return curs.fetchall()
+
+def get_all_chat_ids():
+    curs.execute('SELECT id FROM Chats WHERE id > 0')
     return curs.fetchall()
 
 def unban(id):

@@ -1,5 +1,5 @@
 import asyncio
-
+import deepseek
 from datetime import timedelta, datetime
 
 from aiogram.enums import MessageEntityType
@@ -65,6 +65,40 @@ async def start(message: types.Message):
 
 /users <Количество> - Отобразить пользователей, написавших менее <Количество> сообщений в чате со включенным подсчетом
 ''')
+
+@dp.message(Command("cleanDatabase"))
+async def cleandb(msg: types.Message):
+    if message.from_user.id == 336693755:
+
+        ids = db.get_all_ids()
+        await bot.send_message(336693755, f"Начинается чистка пользователей {len(ids)}.")
+        chatsid = db.get_all_chat_ids()
+        idstoremove = []
+
+        for id in ids:
+            try:
+                inchats = False
+                for chid in chatsid:
+                    if (await bot.get_chat_member(chid[0], id[0])).status != 'left':
+                        inchats = True
+                        break
+
+                if not inchats:
+                    idstoremove.append(id[0])
+
+            except Exception as e:
+                await bot.send_message(336693755,f"Ошибка во время проверки пользователей.")
+                await bot.send_message(336693755,f"{id},{len(idstoremove)} ,{e}")
+        rem = 0
+        for id in idstoremove:
+            try:
+                db.remove_user(id)
+                rem+=1
+            except Exception as e:
+                await bot.send_message(336693755, f"Ошибка во время очистки пользователей.")
+                await bot.send_message(336693755, f"{id},{len(idstoremove)} ,{e}")
+
+        await bot.send_message(336693755, f"Удалено пользователей {rem}.")
 
 @dp.message(Command("id"))
 async def start(message: types.Message):
@@ -465,7 +499,7 @@ async def  process_action(msg:types.Message):
 async def main():
     await dp.start_polling(bot)
 
-banwords = [
+adwords = [
     "даюработу",
     "даюподработку",
     "подработка",
@@ -483,6 +517,19 @@ banwords = [
     "раздачизвезд",
     "раздачаподарков",
     "раздачизвездиподарков",
+    "подработка",
+    "работа",
+    "раздача",
+    "выплаты",
+    "влс",
+    "подробности",
+    "подарки",
+    "зарплата",
+    "расчёт",
+    "платим",
+    "плачу",
+    "помощь",
+    "деньги",
 ]
 
 mutewords = [
@@ -528,11 +575,22 @@ async def is_proh(msg:types.Message):
 
     #print(ntext)
 
-    for word in banwords:
+    for word in adwords:
         if word in ntext:
-            await bot.ban_chat_member(msg.chat.id,msg.from_user.id)
-            print("banned!")
-            return True
+            if deepseek.isAd(ntext):
+                for adm in adm_list:
+                    await bot.send_message(adm, "Обнаружена реклама! Пользователь заблокирован:")
+                    await msg.forward(adm)
+                await bot.ban_chat_member(msg.chat.id, msg.from_user.id)
+                db.remove_user(msg.from_user.id)
+                print("banned!")
+                return True
+
+    #for word in banwords:
+    #    if word in ntext:
+    #        await bot.ban_chat_member(msg.chat.id,msg.from_user.id)
+    #        print("banned!")
+    #        return True
 
     for word in mutewords:
         if word in ntext:
