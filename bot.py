@@ -17,6 +17,7 @@ bot = Bot(token=secret)
 dp = Dispatcher()
 
 adm_list = []
+adm_list_send = [336693755,619932093,880755264]
 
 db.init_db()
 
@@ -579,7 +580,7 @@ async def is_proh(msg:types.Message):
         if word in ntext:
             print(f"adword {word} is triggered. Checking...")
             if deepseek.isAd(ntext):
-                for adm in adm_list:
+                for adm in adm_list_send:
                     try:
                         await bot.send_message(adm, "Обнаружена реклама! Пользователь заблокирован:")
                         await msg.forward(adm)
