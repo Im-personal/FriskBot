@@ -174,7 +174,7 @@ def get_all_ids():
     return curs.fetchall()
 
 def get_all_chat_ids():
-    curs.execute('SELECT id FROM Chats WHERE id > 0')
+    curs.execute('SELECT id FROM Chats')
     return curs.fetchall()
 
 def unban(id):

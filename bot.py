@@ -67,6 +67,10 @@ async def start(message: types.Message):
 /users <Количество> - Отобразить пользователей, написавших менее <Количество> сообщений в чате со включенным подсчетом
 ''')
 
+@dp.message(Command("debug"))
+async def debug(msg: types.Message):
+    print(len(db.get_all_chat_ids()))
+
 @dp.message(Command("cleanDatabase"))
 async def cleandb(msg: types.Message):
     if msg.from_user.id == 336693755:
@@ -76,28 +80,37 @@ async def cleandb(msg: types.Message):
         chatsid = db.get_all_chat_ids()
         idstoremove = []
 
-        for id in ids:
+        for uid in ids:
             try:
+
                 inchats = False
                 for chid in chatsid:
-                    if (await bot.get_chat_member(chid[0], id[0])).status != 'left':
-                        inchats = True
-                        break
+                    try:
+                        if (await bot.get_chat_member(chid[0],uid[0])).status != 'left':
+                            inchats = True
+                            break
+                    except Exception as d:
+                        pass
+
+
 
                 if not inchats:
-                    idstoremove.append(id[0])
+                    idstoremove.append(uid[0])
+
+                if ids.index(uid)%10 == 0:
+                    await bot.send_message(336693755, f"{len(ids)}/{ids.index(uid)}: {len(idstoremove)}")
 
             except Exception as e:
                 await bot.send_message(336693755,f"Ошибка во время проверки пользователей.")
-                await bot.send_message(336693755,f"{id},{len(idstoremove)} ,{e}")
+                await bot.send_message(336693755,f"{uid[0]}, {len(idstoremove)} ,{e}")
         rem = 0
-        for id in idstoremove:
+        for uid in idstoremove:
             try:
-                db.remove_user(id)
+                db.remove_user(uid)
                 rem+=1
             except Exception as e:
                 await bot.send_message(336693755, f"Ошибка во время очистки пользователей.")
-                await bot.send_message(336693755, f"{id},{len(idstoremove)} ,{e}")
+                await bot.send_message(336693755, f"{uid},{len(idstoremove)} ,{e}")
 
         await bot.send_message(336693755, f"Удалено пользователей {rem}.")
 
@@ -403,11 +416,11 @@ async def any(message: types.Message):
                     await bot.send_message(admin, f"Добавлен новый чат - {(await bot.get_chat(ch_id)).title}")
 
         u_id = message.from_user.id
-
-        if not db.check_user(u_id,message.from_user.first_name,db.is_count(message.chat.id)):
-            for admin in adm_list:
-                if admin == 336693755:
-                    await bot.send_message(admin, f"В базу данных добавлен новый пользователь - {message.from_user.first_name}")
+        if (await bot.get_chat_member(message.chat.id,u_id)).status != 'left':
+            if not db.check_user(u_id,message.from_user.first_name,db.is_count(message.chat.id)):
+                for admin in adm_list:
+                    if admin == 336693755:
+                        await bot.send_message(admin, f"В базу данных добавлен новый пользователь - {message.from_user.first_name}")
         if db.is_count(message.chat.id):
             db.lookfor(u_id)
             db.add_message(u_id)
