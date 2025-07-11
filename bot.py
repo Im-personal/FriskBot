@@ -69,7 +69,7 @@ async def start(message: types.Message):
 
 @dp.message(Command("cleanDatabase"))
 async def cleandb(msg: types.Message):
-    if message.from_user.id == 336693755:
+    if msg.from_user.id == 336693755:
 
         ids = db.get_all_ids()
         await bot.send_message(336693755, f"Начинается чистка пользователей {len(ids)}.")
