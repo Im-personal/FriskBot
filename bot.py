@@ -596,14 +596,23 @@ async def is_proh(msg:types.Message):
     for word in adwords:
         if word in ntext:
             print(f"adword {word} is triggered. Checking...")
+            await bot.send_message(adm, "Подозревается реклама, проверка...")
+            await msg.forward(adm)
             if deepseek.isAd(ntext):
                 for adm in adm_list_send:
                     try:
-                        await bot.send_message(adm, "Обнаружена реклама! Пользователь заблокирован:")
-                        await msg.forward(adm)
+                        await bot.send_message(adm, "Кажется рял реклама! Блокирруеемм")
                     except Exception as e:
                         print("damn error")
+
                 await bot.ban_chat_member(msg.chat.id, msg.from_user.id)
+
+                for adm in adm_list_send:
+                    try:
+                        await bot.send_message(adm, "Готово!")
+                    except Exception as e:
+                        print("damn error")
+
                 db.remove_user(msg.from_user.id)
                 print("banned!")
                 return True
