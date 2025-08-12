@@ -1,4 +1,7 @@
 import asyncio
+
+from aiogram.types import ErrorEvent
+
 import deepseek
 from datetime import timedelta, datetime
 
@@ -7,6 +10,7 @@ from aiogram.enums import MessageEntityType
 import db
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
+from aiogram.exceptions import TelegramBadRequest
 
 # Initialize bot and dispatcher
 secret = ""
@@ -295,7 +299,7 @@ async def lists(msg: types.Message):
                     await bot.send_message(msg.chat.id, s, parse_mode="MarkdownV2")
             else:
                 await bot.send_message(msg.chat.id, f"Щас будет призыв чата! (Тех, кто за жизнь бота писал хоть раз)")
-                data = await bot.get_chat_member(msg.chat.id, 6392881424)
+                #data = await bot.get_chat_member(msg.chat.id, 6392881424)
 
                 us = db.get_all_ids()
                 ustocall = []
@@ -304,8 +308,8 @@ async def lists(msg: types.Message):
                     try:
                         if (await bot.get_chat_member(msg.chat.id, u[0])).status!='left':
                             ustocall.append(u[0])
-                    except Exception:
-                        pass
+                    except TelegramBadRequest:
+                        print("Не найден!")
 
                 s = ""
                 count = 0
