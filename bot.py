@@ -433,7 +433,7 @@ async def any(message: types.Message):
             await message.delete()
 
 
-        if "t.me" in message.text:
+        if "t.me" in message.text or False:
             dt = datetime.now() + timedelta(hours=1)
             timestamp = dt.timestamp()
             await bot.restrict_chat_member(message.chat.id, message.from_user.id,
