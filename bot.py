@@ -216,9 +216,11 @@ async def setup_chats(message: types.Message):
             await bot.send_message(message.from_user.id,f"Настройка чатов! Вот чаты, которые помнит бот:")
 
             for d in db.get_chats():
-                chat_d = await bot.get_chat(d[0])
-                await bot.send_message(message.from_user.id, f"{chat_d.title}\nID: {chat_d.id}\n\nПодсчет сообщений {'выключен' if d[2]==0 else 'включён'}\n\nСообщение под посты: \n{'[Не задано]' if len(d[1])<1 else d[1]}")
-
+                try:
+                    chat_d = await bot.get_chat(d[0])
+                    await bot.send_message(message.from_user.id, f"{chat_d.title}\nID: {chat_d.id}\n\nПодсчет сообщений {'выключен' if d[2]==0 else 'включён'}\n\nСообщение под посты: \n{'[Не задано]' if len(d[1])<1 else d[1]}")
+                except Exception as e:
+                    print("no chat")
             await bot.send_message(message.from_user.id,f"Для включения подсчета сообщений в чате напишите /count <id>\n\nДля создания сообщения, что будет писаться под каждым постом напишите /message <id>\n\nУбрать чат из списка (бот выйдет из чата) /remove <id>")
 
 @dp.message(Command("count"))
