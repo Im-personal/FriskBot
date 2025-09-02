@@ -613,9 +613,11 @@ rep = [
 
 async def is_proh(msg:types.Message):
     ntext = msg.text.replace(" ","").replace("\n",'').lower()
+    nntext = msg.text.replace("\n",'').lower()
 
     for com in rep:
         ntext = ntext.replace(com[0],com[1])
+        nntext = ntext.replace(com[0],com[1])
 
     #print(ntext)
 
@@ -642,7 +644,7 @@ async def is_proh(msg:types.Message):
     #        return True
 
     for word in mutewords:
-        if word in ntext:
+        if word in nntext:
             dt = datetime.now() + timedelta(hours=1)
             timestamp = dt.timestamp()
             await bot.restrict_chat_member(msg.chat.id, msg.from_user.id,
