@@ -73,13 +73,15 @@ async def start(message: types.Message):
 
 @dp.message(Command("debug"))
 async def debug(msg: types.Message):
-    print(len(db.get_all_chat_ids()))
+    db.not_lookfor()
 
 async def check_count_chats(id):
     chatsid = db.get_count_chat_ids()
     for chid in chatsid:
         try:
-            if (await bot.get_chat_member(chid[0], id)).status != 'left':
+            res = (await bot.get_chat_member(chid[0], id)).status
+            print(res)
+            if res == 'member':
                 return True
         except Exception as d:
             pass
