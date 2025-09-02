@@ -75,6 +75,16 @@ async def start(message: types.Message):
 async def debug(msg: types.Message):
     print(len(db.get_all_chat_ids()))
 
+async def check_count_chats(id):
+    chatsid = db.get_count_chat_ids()
+    for chid in chatsid:
+        try:
+            if (await bot.get_chat_member(chid[0], id)).status != 'left':
+                return True
+        except Exception as d:
+            pass
+    return False
+
 @dp.message(Command("cleanDatabase"))
 async def cleandb(msg: types.Message):
     if msg.from_user.id == 336693755:
@@ -342,7 +352,8 @@ async def lists(msg: types.Message):
             us = db.get_users_lookfor(count)
             res = f"Пользователи, написавшие меньше {count} сообщений:\n"
             for u in us:
-                res+=f"[{protect(u[1])}](tg://user?id={u[0]}) \\- {u[2]}\n"
+                if await check_count_chats(u[0]):
+                    res+=f"[{protect(u[1])}](tg://user?id={u[0]}) \\- {u[2]}\n"
             res += protect("\n/clear - для очистки количества сообщений")
             await bot.send_message(msg.chat.id, res, parse_mode="MarkdownV2")
 

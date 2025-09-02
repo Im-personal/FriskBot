@@ -177,6 +177,10 @@ def get_all_chat_ids():
     curs.execute('SELECT id FROM Chats')
     return curs.fetchall()
 
+def get_count_chat_ids():
+    curs.execute('SELECT id FROM Chats WHERE count = true')
+    return curs.fetchall()
+
 def unban(id):
     curs.execute("DELETE FROM banned WHERE id = ?",(id,))
     conn.commit()
