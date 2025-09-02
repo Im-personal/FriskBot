@@ -342,6 +342,14 @@ async def clear(msg: types.Message):
     if msg.chat.type == "private":
         if msg.from_user.id in adm_list:
             db.clear_messages()
+
+            ids = db.get_users_lookfor()
+
+            for id in ids:
+                if not (await check_count_chats(id[0])):
+                    print(f"{id[0]} is not")
+                    db.not_lookfor(id[0])
+
             await bot.send_message(msg.chat.id, "Данные обнулены!")
 
 @dp.message(Command("users"))
@@ -352,8 +360,7 @@ async def lists(msg: types.Message):
             us = db.get_users_lookfor(count)
             res = f"Пользователи, написавшие меньше {count} сообщений:\n"
             for u in us:
-                if await check_count_chats(u[0]):
-                    res+=f"[{protect(u[1])}](tg://user?id={u[0]}) \\- {u[2]}\n"
+                res+=f"[{protect(u[1])}](tg://user?id={u[0]}) \\- {u[2]}\n"
             res += protect("\n/clear - для очистки количества сообщений")
             await bot.send_message(msg.chat.id, res, parse_mode="MarkdownV2")
 

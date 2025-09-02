@@ -63,6 +63,11 @@ def lookfor(id):
     curs.execute('UPDATE Users SET lookfor=true WHERE id=?', (id,))
     conn.commit()
 
+def not_lookfor(id):
+    check_user(id)
+    curs.execute('UPDATE Users SET lookfor=false     WHERE id=?', (id,))
+    conn.commit()
+
 def add_message(id):
     check_user(id)
     curs.execute('UPDATE Users SET msg = msg+1 WHERE id=? and lookfor=true',(id,))
