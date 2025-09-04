@@ -135,6 +135,12 @@ async def start(message: types.Message):
     if message.from_user.id in adm_list:
             await bot.send_message(message.chat.id, f"ID пользователя: {message.reply_to_message.from_user.id}")
 
+@dp.message(Command("kick"))
+async def start(msg: types.Message):
+    if msg.from_user.id in adm_list:
+            await bot.ban_chat_member(msg.chat.id, msg.reply_to_message.from_user.id)
+            await bot.unban_chat_member(msg.chat.id, msg.reply_to_message.from_user.id)
+
 @dp.message(Command("ban"))
 async def ban(message: types.Message):
     if message.from_user.id in adm_list:
