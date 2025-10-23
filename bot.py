@@ -367,7 +367,10 @@ async def lists(msg: types.Message):
             count = 9999999 if msg.text=='/users' else int(msg.text.replace('/users ',''))
             us = db.get_users_lookfor(count)
             res = f"Пользователи, написавшие меньше {count} сообщений:\n"
-            for u in us:
+
+            sorted_us = sorted(us, key = lambda x:x[2],reverse=True)
+
+            for u in sorted_us:
                 res+=f"[{protect(u[1])}](tg://user?id={u[0]}) \\- {u[2]}\n"
             res += protect("\n/clear - для очистки количества сообщений")
             await bot.send_message(msg.chat.id, res, parse_mode="MarkdownV2")
