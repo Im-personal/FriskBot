@@ -647,14 +647,13 @@ async def is_proh(msg:types.Message):
         if word in ntext:
             print(f"adword {word} is triggered. Checking...")
             isadbanned = (msg.from_user.id in adbanned)
-            if isadbanned or deepseek.isAd(ntext):
+            if deepseek.isAd(ntext):
 
                 for adm in adm_list_send:
                     try:
-                        if isadbanned:
-                            await bot.send_message(adm, "Обнаружена реклама! Пользователь заблокирован:")
-                        else:
-                            await bot.send_message(adm, "Обнаружено еще одно сообщение от того же пользователя. Сообщение удалено.")
+
+                        await bot.send_message(adm, "Обнаружена реклама! Пользователь заблокирован:")
+
                         await msg.forward(adm)
                     except Exception as e:
                         print("damn error")
