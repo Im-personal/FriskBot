@@ -430,7 +430,9 @@ async def done(msg: types.Message):
 
 @dp.message(Command("debug4810011"))
 async def debug(message: types.Message):
-    db.debug()
+    if(message.from_user.id == adm_list_send[0]):
+        db.debug()
+        print("DONE")
 
 def is_adm(msg):
     return msg.from_user.id in adm_list

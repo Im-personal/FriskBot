@@ -142,7 +142,7 @@ def get_greet(id):
     return curs.fetchall()
 
 def debug():
-    #curs.execute('''ALTER TABLE Chats ADD COLUMN greet TEXT''')
+    curs.execute('''ALTER TABLE Chats ADD COLUMN greet TEXT''')
     curs.execute("UPDATE Chats SET greet = \"\" WHERE id!=0")
     conn.commit()
 
