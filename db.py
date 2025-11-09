@@ -36,9 +36,13 @@ def init_db():
     users TEXT
     )''')#Для созывов
 
+    #curs.execute('''ALTER TABLE Chats ADD COLUMN greet TEXT''')
+    #debug()
     conn.commit()
 
 #Админы
+
+
 
 def get_admins():
     curs.execute('SELECT id FROM Admins')
@@ -111,7 +115,7 @@ def is_chat_exists(id):
 def check_chat(id):
     curs.execute('SELECT * FROM Chats WHERE id = ?', (id,))
     if (len(curs.fetchall()) <= 0):
-        curs.execute("INSERT INTO Chats(id, rules,count) VALUES (?,'',false)",(id,))
+        curs.execute("INSERT INTO Chats(id, rules,greet,count) VALUES (?,'','',false)",(id,))
         conn.commit()
         return False
     return True
@@ -129,8 +133,17 @@ def set_message(id,message):
     curs.execute('UPDATE Chats SET rules = ? WHERE id = ?', (message, id))
     conn.commit()
 
+def set_greet(id,message):
+    curs.execute('UPDATE Chats SET greet = ? WHERE id = ?', (message, id))
+    conn.commit()
+
+def get_greet(id):
+    curs.execute('SELECT greet FROM Chats WHERE id==?', (id,))
+    return curs.fetchall()
+
 def debug():
-    curs.execute('DROP TABLE Users')
+    #curs.execute('''ALTER TABLE Chats ADD COLUMN greet TEXT''')
+    curs.execute("UPDATE Chats SET greet = \"\" WHERE id!=0")
     conn.commit()
 
 def get_chats():

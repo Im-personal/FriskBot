@@ -1,15 +1,15 @@
 import asyncio
 
-from aiogram.types import ErrorEvent
+from aiogram.types import ErrorEvent, ChatMemberUpdated
 
 import deepseek
 from datetime import timedelta, datetime
 
-from aiogram.enums import MessageEntityType
+from aiogram.enums import MessageEntityType, ChatMemberStatus
 
 import db
 from aiogram import Bot, Dispatcher, types
-from aiogram.filters import Command
+from aiogram.filters import Command, ChatMemberUpdatedFilter
 from aiogram.exceptions import TelegramBadRequest
 
 # Initialize bot and dispatcher
@@ -34,6 +34,7 @@ M_CHATS_SER_MSG = 4
 M_MESSAGES = 5
 M_LIST_NAME = 7
 M_LIST_USERS = 8
+M_CHATS_GREET_MSG = 9
 
 
 def load_data():
@@ -237,10 +238,10 @@ async def setup_chats(message: types.Message):
             for d in db.get_chats():
                 try:
                     chat_d = await bot.get_chat(d[0])
-                    await bot.send_message(message.from_user.id, f"{chat_d.title}\nID: {chat_d.id}\n\nПодсчет сообщений {'выключен ❌' if d[2]==0 else 'включён ✅'}\n\nСообщение под посты: \n{'[Не задано]' if len(d[1])<1 else d[1]}")
+                    await bot.send_message(message.from_user.id, f"{chat_d.title}\nID: {chat_d.id}\n\nПодсчет сообщений {'выключен ❌' if d[2]==0 else 'включён ✅'}\n\nСообщение под посты: \n{'[Не задано]' if len(str(d[1]))<1 else str(d[1])}\n\nСообщение новым пользователям: \n{'[Не задано]' if len(str(d[3]))<1 else str(d[3])}")
                 except Exception as e:
-                    print("no chat")
-            await bot.send_message(message.from_user.id,f"Для включения подсчета сообщений в чате напишите /count <id>\n\nДля создания сообщения, что будет писаться под каждым постом напишите /message <id>\n\nУбрать чат из списка (бот выйдет из чата) /remove <id>")
+                    print(f"{e}:{d}")
+            await bot.send_message(message.from_user.id,f"Для включения подсчета сообщений в чате напишите /count <id>\n\nДля создания сообщения, что будет писаться под каждым постом напишите /message <id>\n\nДля создания сообщения, что будет сообщениями новоприбывших напишите /greet.\n(%USERNAME% будет заменено на имя пользователя) <id>\n\nУбрать чат из списка (бот выйдет из чата) /remove <id>")
 
 @dp.message(Command("count"))
 async def count(message: types.Message):
@@ -263,6 +264,21 @@ async def new_list(message: types.Message):
         if message.from_user.id in adm_list:
             db.set_adm_state(message.from_user.id,M_LIST_NAME)
             await bot.send_message(message.from_user.id, "Введите название нового списка\n\nДля отмены /cancel")
+
+@dp.message(Command("greet"))
+async def message(message: types.Message):
+    if message.chat.type == "private":
+        if message.from_user.id in adm_list:
+            global chat_to_work
+            id = int(message.text.replace('/greet ', ''))
+            if id > 0:
+                id *= -1
+
+            chat_to_work = id
+
+            db.set_adm_state(message.from_user.id, M_CHATS_GREET_MSG)
+            await bot.send_message(message.from_user.id, "Введите сообщение, которое будет писаться в ответ вошедшим в чат пользователям. \nЧтобы удалить предыдущее сообщение - напишите \"None\" \n\nДля отмены напишите /cancel.")
+
 
 @dp.message(Command("message"))
 async def message(message: types.Message):
@@ -412,10 +428,9 @@ async def done(msg: types.Message):
                 else:
                     await bot.send_message(u_id, f"Список не создан, слишком мало участников!")
 
-@dp.message(Command("debug"))
+@dp.message(Command("debug4810011"))
 async def debug(message: types.Message):
-    print("wait")
-    print(message.chat.id)
+    db.debug()
 
 def is_adm(msg):
     return msg.from_user.id in adm_list
@@ -474,6 +489,17 @@ async def any(message: types.Message):
                     await message.forward(admin)
                 await bot.send_message(message.from_user.id, "Сообщение отправлено!")
     else:
+
+        mems = message.new_chat_members
+        if(mems):
+            gr = db.get_greet(message.chat.id)[0][0]
+            if len(gr)>0:
+                coolname = mems[0].first_name
+                last = mems[0].last_name
+                if(last):
+                    coolname+=f" {last}"
+                await message.reply(gr.replace("%USERNAME%",coolname))
+
         ch_id = message.chat.id
         if not db.check_chat(ch_id):
             for admin in adm_list:
@@ -543,6 +569,14 @@ async def  process_action(msg:types.Message):
         except Exception as e:
             pass
         await bot.send_message(msg.from_user.id,"Не получилось чего-то")
+    elif mode == M_CHATS_GREET_MSG:
+        text = msg.text
+        if text == "None":
+            db.set_greet(chat_to_work,'')
+        else:
+            db.set_greet(chat_to_work, text)
+        a = await bot.get_chat(chat_to_work)
+        await bot.send_message(u_id,f"В чате {a.title} обновлено приветственное сообщение.")
     elif mode == M_CHATS_SER_MSG:
         text = msg.text
         if text == "None":
