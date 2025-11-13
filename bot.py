@@ -491,7 +491,6 @@ async def any(message: types.Message):
                     await message.forward(admin)
                 await bot.send_message(message.from_user.id, "Сообщение отправлено!")
     else:
-
         mems = message.new_chat_members
         if(mems):
             gr = db.get_greet(message.chat.id)[0][0]
@@ -500,7 +499,9 @@ async def any(message: types.Message):
                 last = mems[0].last_name
                 if(last):
                     coolname+=f" {last}"
-                await message.reply(gr.replace("%USERNAME%",coolname))
+                coolname=f"[{coolname}](tg://user?id={mems[0].id})"
+                print("sendin!")
+                await message.reply(protect(gr).replace("%USERNAME%",coolname),parse_mode="MarkdownV2")
 
         ch_id = message.chat.id
         if not db.check_chat(ch_id):
@@ -702,35 +703,38 @@ rep = [
 ]
 
 async def is_proh(msg:types.Message):
-    ntext = msg.text.replace(" ","").replace("\n",'').lower()
-    nntext = msg.text.replace("\n",'').lower()
+    try:
+        ntext = msg.text.replace(" ","").replace("\n",'').lower()
+        nntext = msg.text.replace("\n",'').lower()
 
-    for com in rep:
-        ntext = ntext.replace(com[0],com[1])
-        nntext = ntext.replace(com[0],com[1])
+        for com in rep:
+            ntext = ntext.replace(com[0],com[1])
+            nntext = ntext.replace(com[0],com[1])
 
-    #print(ntext)
+        #print(ntext)
 
-    for word in adwords:
-        if word in ntext:
-            print(f"adword {word} is triggered. Checking...")
-            isadbanned = (msg.from_user.id in adbanned)
-            if deepseek.isAd(ntext):
+        for word in adwords:
+            if word in ntext:
+                print(f"adword {word} is triggered. Checking...")
+                isadbanned = (msg.from_user.id in adbanned)
+                if deepseek.isAd(ntext):
 
-                for adm in adm_list_send:
-                    try:
+                    for adm in adm_list_send:
+                        try:
 
-                        await bot.send_message(adm, "Обнаружена реклама! Пользователь заблокирован:")
+                            await bot.send_message(adm, "Обнаружена реклама! Пользователь заблокирован:")
 
-                        await msg.forward(adm)
-                    except Exception as e:
-                        print("damn error")
-                await bot.ban_chat_member(msg.chat.id, msg.from_user.id)
-                db.remove_user(msg.from_user.id)
-                print("banned!")
-                adbanned.append(msg.from_user.id)
-                return True
-            print(f"nah, not ad")
+                            await msg.forward(adm)
+                        except Exception as e:
+                            print("damn error")
+                    await bot.ban_chat_member(msg.chat.id, msg.from_user.id)
+                    db.remove_user(msg.from_user.id)
+                    print("banned!")
+                    adbanned.append(msg.from_user.id)
+                    return True
+                print(f"nah, not ad")
+    except Exception:
+        return False
 
     #for word in banwords:
     #    if word in ntext:
